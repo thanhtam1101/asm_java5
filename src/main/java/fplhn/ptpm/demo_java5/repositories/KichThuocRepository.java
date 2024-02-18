@@ -12,4 +12,5 @@ public interface KichThuocRepository extends JpaRepository<KichThuoc, Integer> {
     public static final int ACTIVE = 1;
     public static final int INACTIVE = 0;
     public Page<KichThuoc> findByTrangThai(int trangThai, Pageable pageable);
+    public KichThuoc findById(int id);
 }

@@ -55,7 +55,7 @@ public class BanHangController {
         Page<SanPhamChiTiet> pageDataSPCT = sanPhamChiTietRepository.findByTrangThai(sanPhamChiTietRepository.ACTIVE, p);
         model.addAttribute("data", hd);
         model.addAttribute("pageDataSPCT", pageDataSPCT);
-        model.addAttribute("listCTSP", this.sanPhamChiTietRepository.findAll());
+     //   model.addAttribute("listCTSP", this.sanPhamChiTietRepository.findAll());
         model.addAttribute("listSP", this.sanPhamRepository.findAll());
         model.addAttribute("listMS", this.mauSacRepository.findAll());
         model.addAttribute("listKT", this.kichThuocRepository.findAll());
@@ -97,7 +97,7 @@ public class BanHangController {
         Page<SanPhamChiTiet> listSPCT = sanPhamChiTietRepository.findByTrangThai(sanPhamChiTietRepository.ACTIVE, p);
         model.addAttribute("pageDataSPCT", listSPCT);
         model.addAttribute("data", hd);
-        model.addAttribute("listCTSP", this.sanPhamChiTietRepository.findAll());
+    //    model.addAttribute("listCTSP", this.sanPhamChiTietRepository.findAll());
         model.addAttribute("listSP", this.sanPhamRepository.findAll());
         model.addAttribute("listMS", this.mauSacRepository.findAll());
         model.addAttribute("listKT", this.kichThuocRepository.findAll());
@@ -290,21 +290,18 @@ public class BanHangController {
 
         // Kiểm tra xem có sản phẩm trong giỏ hàng của hóa đơn không
         if (!gioHangTheoHoaDon.isEmpty()) {
-            // Lặp qua từng chi tiết hóa đơn để cập nhật lại số lượng sản phẩm trong kho
             for (HoaDonChiTiet hdct : gioHangTheoHoaDon) {
-                // Lấy sản phẩm chi tiết tương ứng
                 SanPhamChiTiet spct = this.sanPhamChiTietRepository.findById(hdct.getIdSPCT()).orElse(null);
                 if (spct != null) {
                     // Cộng lại số lượng sản phẩm trong kho
                     spct.setSoLuong(spct.getSoLuong() + hdct.getSoLuong());
                     this.sanPhamChiTietRepository.save(spct);
                 }
-                // Sau đó, xóa chi tiết hóa đơn
+
                 this.hoaDonChiTietRepository.deleteById(hdct.getId());
             }
         }
 
-        // Tiếp theo, sau khi xóa sản phẩm và cập nhật số lượng trong kho, bạn có thể xóa hóa đơn
         this.hoaDonRepository.deleteById(id);
 
         return "redirect:/ban-hang/index";

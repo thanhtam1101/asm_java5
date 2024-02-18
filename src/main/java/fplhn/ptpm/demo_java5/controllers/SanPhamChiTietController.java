@@ -35,7 +35,7 @@ public class SanPhamChiTietController {
 
     @GetMapping("index")
     public String index(Model model, StoreRequest req,
-                        @RequestParam("page")Optional<Integer> pageParam) {
+                        @RequestParam("page") Optional<Integer> pageParam) {
         int page = pageParam.orElse(0);
         Pageable p = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
         Page<SanPhamChiTiet> pageData = sanPhamChiTietRepository.findByTrangThai(sanPhamChiTietRepository.ACTIVE, p);
@@ -49,22 +49,31 @@ public class SanPhamChiTietController {
 
     @PostMapping("store")
     public String store(@Valid @ModelAttribute("data") StoreRequest req, BindingResult result, Model model) {
+        SanPhamChiTiet spct = new SanPhamChiTiet();
         if (result.hasErrors()) {
-            model.addAttribute("list", sanPhamChiTietRepository.findAll());
+            //model.addAttribute("list", sanPhamChiTietRepository.findAll());
             model.addAttribute("listSP", sanPhamRepository.findAll());
             model.addAttribute("listMS", mauSacRepository.findAll());
             model.addAttribute("listKT", kichThuocRepository.findAll());
             return "admin/ql-chi-tiet-sp/index";
+        } else if (sanPhamChiTietRepository.findById(req.getIdSanPham(), req.getIdMauSac(), req.getIdKichThuoc()) != null) {
+            spct = sanPhamChiTietRepository.findById(req.getIdSanPham(), req.getIdMauSac(), req.getIdKichThuoc());
+            spct.setSoLuong(req.getSoLuong() +
+                    sanPhamChiTietRepository.findById(req.getIdSanPham(), req.getIdMauSac(), req.getIdKichThuoc()).getSoLuong());
+            spct.setDonGia(req.getDonGia());
+            sanPhamChiTietRepository.save(spct);
+        } else {
+            spct.setMaSPCT("SPCT" + sanPhamChiTietRepository.findAll().size() + 1);
+            spct.setIdMauSac(req.getIdMauSac());
+            spct.setIdKichThuoc(req.getIdKichThuoc());
+            spct.setSoLuong(req.getSoLuong());
+            spct.setDonGia(req.getDonGia());
+            spct.setIdSanPham(req.getIdSanPham());
+            spct.setTrangThai(1);
+            this.sanPhamChiTietRepository.save(spct);
+            sanPhamChiTietRepository.save(spct);
         }
-        SanPhamChiTiet spct = new SanPhamChiTiet();
-        spct.setMaSPCT("SPCT" + sanPhamChiTietRepository.findAll().size()+ 1);
-        spct.setIdMauSac(req.getIdMauSac());
-        spct.setIdKichThuoc(req.getIdKichThuoc());
-        spct.setSoLuong(req.getSoLuong());
-        spct.setDonGia(req.getDonGia());
-        spct.setIdSanPham(req.getIdSanPham());
-        spct.setTrangThai(1);
-        this.sanPhamChiTietRepository.save(spct);
+
         return "redirect:/spct/index";
 
     }
@@ -85,7 +94,7 @@ public class SanPhamChiTietController {
     }
 
     @GetMapping("detail/{id}")
-    public String detail(@PathVariable("id") SanPhamChiTiet spct, Model model,  @RequestParam("page")Optional<Integer> pageParam) {
+    public String detail(@PathVariable("id") SanPhamChiTiet spct, Model model, @RequestParam("page") Optional<Integer> pageParam) {
         int page = pageParam.orElse(0);
         Pageable p = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
         Page<SanPhamChiTiet> pageData = sanPhamChiTietRepository.findByTrangThai(sanPhamChiTietRepository.ACTIVE, p);

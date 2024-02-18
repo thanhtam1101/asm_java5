@@ -11,4 +11,5 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     public static final int ACTIVE = 1;
     public static final int INACTIVE = 0;
     public Page<SanPham> findByTrangThai(int trangThai, Pageable pageable);
+    public SanPham findById(int id);
 }
